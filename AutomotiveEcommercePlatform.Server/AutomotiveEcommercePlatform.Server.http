@@ -1,0 +1,6 @@
+@AutomotiveEcommercePlatform.Server_HostAddress = http://localhost:5208
+
+GET {{AutomotiveEcommercePlatform.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
