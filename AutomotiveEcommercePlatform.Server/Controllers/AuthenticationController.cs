@@ -58,7 +58,7 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
                 if (isCreated.Succeeded)
                 {
                     // Generate the token
-                    var token = GenrateJwtToken(newUser);
+                    var token = GenerateJwtToken(newUser);
                     return Ok(new AuthResult()
                     {
                         Result = true,
@@ -80,7 +80,52 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
             return BadRequest();
         }
 
-        private string GenrateJwtToken(ApplicationUser user)
+        [Route("Login")]
+        [HttpPost]
+        public async Task<IActionResult> Login([FromBody] UserLoginRequestDto loginRequest)
+        {
+            if (ModelState.IsValid)
+            {
+                // check if the user exist 
+                var existingUser = await _userManager.FindByEmailAsync(loginRequest.Email);
+                if (existingUser == null)
+                    return BadRequest(new AuthResult()
+                    {
+                        Result = false,
+                        Errors = new List<string>()
+                        {
+                            "Invalid payload"
+                        }
+                    });
+                var isCorrect = await _userManager.CheckPasswordAsync(existingUser,loginRequest.Password);
+
+                if (!isCorrect)
+                    return BadRequest(new AuthResult()
+                    {
+                        Result = false,
+                        Errors = new List<string>()
+                        {
+                            "Invalid Credentials"
+                        }
+                    });
+                var jwtToken = GenerateJwtToken(existingUser);
+                return Ok(new AuthResult()
+                {
+                    Result = true,
+                    Token = jwtToken
+                });
+
+            }
+            return BadRequest(new AuthResult()
+            {
+                Result = false ,
+                Errors = new List<string>()
+                {
+                    "Invalid Payload"
+                }
+            });
+        }
+        private string GenerateJwtToken(ApplicationUser user)
         {
             var jwtTokenHandler = new JwtSecurityTokenHandler();
 
