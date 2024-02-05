@@ -2,6 +2,7 @@ using System.Text;
 using AutomotiveEcommercePlatform.Server.Configurations;
 using AutomotiveEcommercePlatform.Server.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using ReactApp1.Server.Data;
@@ -51,7 +52,7 @@ builder.Services.AddAuthentication(options =>
 
 
 
-
+    
 var app = builder.Build();
 
 
