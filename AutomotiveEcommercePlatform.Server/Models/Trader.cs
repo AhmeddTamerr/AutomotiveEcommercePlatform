@@ -5,7 +5,7 @@ namespace DataBase_LastTesting.Models
 {
     public class Trader
     {
-        public int Id { get; set; }
+        public int TraderId { get; set; }
 
         [MaxLength(50)]
         public string FirstName { get; set; }

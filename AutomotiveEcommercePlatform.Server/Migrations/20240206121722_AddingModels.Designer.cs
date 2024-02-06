@@ -12,7 +12,7 @@ using ReactApp1.Server.Data;
 namespace AutomotiveEcommercePlatform.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240206120631_AddingModels")]
+    [Migration("20240206121722_AddingModels")]
     partial class AddingModels
     {
         /// <inheritdoc />
@@ -116,6 +116,11 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("BrandName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<string>("CarCategory")
                         .IsRequired()
                         .HasMaxLength(15)
@@ -135,11 +140,6 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
 
                     b.Property<int>("ModelYear")
                         .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
 
                     b.Property<int>("OrderId")
                         .HasColumnType("int");

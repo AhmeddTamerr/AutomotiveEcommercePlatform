@@ -44,13 +44,13 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
                         column: x => x.ApplicationUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Users_Traders_TradeId",
                         column: x => x.TradeId,
                         principalTable: "Traders",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -68,7 +68,7 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "ApplicationUserId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -89,7 +89,7 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
                         column: x => x.UserApplicationUserId,
                         principalTable: "Users",
                         principalColumn: "ApplicationUserId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -110,13 +110,13 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
                         column: x => x.TraderId,
                         principalTable: "Traders",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_TraderRating_Users_UserApplicationUserId",
                         column: x => x.UserApplicationUserId,
                         principalTable: "Users",
                         principalColumn: "ApplicationUserId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -125,7 +125,7 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    BrandName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     ModelName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     ModelYear = table.Column<int>(type: "int", nullable: false),
                     Price = table.Column<decimal>(type: "Decimal(15,2)", nullable: false),
@@ -143,13 +143,13 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
                         column: x => x.OrderId,
                         principalTable: "Order",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Cars_Traders_TraderId",
                         column: x => x.TraderId,
                         principalTable: "Traders",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -171,13 +171,13 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
                         column: x => x.CarId,
                         principalTable: "Cars",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_CarReview_Users_UserApplicationUserId",
                         column: x => x.UserApplicationUserId,
                         principalTable: "Users",
                         principalColumn: "ApplicationUserId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -196,13 +196,13 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
                         column: x => x.CarsId,
                         principalTable: "Cars",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_CarsInCart_Cart_CartsCarId_CartsUserId",
                         columns: x => new { x.CartsCarId, x.CartsUserId },
                         principalTable: "Cart",
                         principalColumns: new[] { "CarId", "UserId" },
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(

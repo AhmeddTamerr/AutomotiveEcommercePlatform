@@ -19,7 +19,8 @@ namespace DataBase_LastTesting.Models
         public  string ApplicationUserId { get; set; }
 
         public List<Order> Order { get; set; }
-        public Trader Trade { get; set; }
+        public Trader Trader { get; set; }
+        public int? TraderId { get; set; }
         public List<CarReview> Review { get; set;}
         public List<TraderRating> TradersRating { get; set; }
 

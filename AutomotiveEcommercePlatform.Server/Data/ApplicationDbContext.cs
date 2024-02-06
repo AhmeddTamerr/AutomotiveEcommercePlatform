@@ -53,6 +53,27 @@ namespace ReactApp1.Server.Data
             .UsingEntity(t => t.ToTable("CarsInCart"));
 
             modelBuilder.Entity<Car>(eb => eb.Property(b => b.Price).HasColumnType("Decimal(15,2)"));
+
+            modelBuilder.Entity<Car>()
+                .Property(c => c.OrderId)
+                .IsRequired(false);
+
+            modelBuilder.Entity<CarReview>()
+                .Property(c => c.Comment)
+                .IsRequired(false);
+
+            modelBuilder.Entity<User>()
+                .HasOne(pt => pt.Trader)
+                .WithOne()
+                .HasForeignKey<User>(k => k.TraderId)
+                .HasPrincipalKey<Trader>(k => k.TraderId);
+
+
+            modelBuilder.Entity<User>()
+                .Property(c => c.TraderId)
+                .IsRequired(false);
+
+
         }
         public DbSet<Car> Cars { get; set; }
         public DbSet<User> Users { get; set; }
