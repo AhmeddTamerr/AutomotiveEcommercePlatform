@@ -24,7 +24,13 @@ namespace ReactApp1.Server.Data
             modelBuilder.Entity<User>()
                 .HasOne<ApplicationUser>()
                 .WithOne()
-                .HasForeignKey<User>(c => c.ApplicationUserId)
+                .HasForeignKey<User>(c => c.UserId)
+                .HasPrincipalKey<ApplicationUser>(c => c.Id);
+            
+            modelBuilder.Entity<Trader>()
+                .HasOne<ApplicationUser>()
+                .WithOne()
+                .HasForeignKey<Trader>(c => c.TraderId)
                 .HasPrincipalKey<ApplicationUser>(c => c.Id);
             
 
@@ -32,16 +38,15 @@ namespace ReactApp1.Server.Data
                 .Property(p => p.PurchaseDate)
                 .HasDefaultValueSql("GETDATE()");
 
-            modelBuilder.Entity<User>()
+            modelBuilder.Entity<ApplicationUser>()
                 .Property(p => p.DisplayName)
                 .HasComputedColumnSql("[FirstName] + ' ' + [LastName]");
+
+            modelBuilder.Entity<User>()
+                .HasKey(c => c.UserId);
 
             modelBuilder.Entity<Trader>()
-                .Property(p => p.DisplayName)
-                .HasComputedColumnSql("[FirstName] + ' ' + [LastName]");
-
-            modelBuilder.Entity<User>()
-                .HasKey(c => c.ApplicationUserId);
+                .HasKey(c => c.TraderId);
 
             modelBuilder.Entity<Cart>()
             .HasKey(k => new { k.CarId, k.UserId });
@@ -67,13 +72,11 @@ namespace ReactApp1.Server.Data
                 .WithOne()
                 .HasForeignKey<User>(k => k.TraderId)
                 .HasPrincipalKey<Trader>(k => k.TraderId);
-
+               
 
             modelBuilder.Entity<User>()
                 .Property(c => c.TraderId)
                 .IsRequired(false);
-
-
         }
         public DbSet<Car> Cars { get; set; }
         public DbSet<User> Users { get; set; }
