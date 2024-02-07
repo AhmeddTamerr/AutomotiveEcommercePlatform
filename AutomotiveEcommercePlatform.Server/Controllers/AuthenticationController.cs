@@ -1,10 +1,13 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using System.Data;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Text.RegularExpressions;
 using AutomotiveEcommercePlatform.Server.Configurations;
 using AutomotiveEcommercePlatform.Server.Data;
 using AutomotiveEcommercePlatform.Server.Models;
 using AutomotiveEcommercePlatform.Server.Models.DTOs;
+using AutomotiveEcommercePlatform.Server.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -17,14 +20,18 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
     public class AuthenticationController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        //private readonly JwtConfig _jwtConfig;
         private readonly IConfiguration _configuration;
+        //private readonly RoleManager<IdentityRole> _roleManager;
 
-        public AuthenticationController(UserManager<ApplicationUser> userManager , IConfiguration configuration)
+
+        // private readonly IUserService _userService;
+
+        public AuthenticationController(UserManager<ApplicationUser> userManager , IConfiguration configuration /*, RoleManager<IdentityRole> roleManager , IUserService userService;*/)
         {
             _userManager = userManager;
             _configuration = configuration;
-           // _jwtConfig = jwtConfig;
+            //_roleManager = roleManager;
+            //_userService = userService;
         }
 
 
@@ -35,6 +42,17 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
             // validate the incoming request
             if (ModelState.IsValid)
             {
+
+                // Validate the email 
+                if (!Regex.IsMatch(requestDto.Email, @"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$"))
+                    return BadRequest(new AuthResult()
+                    {
+                        Result = false,
+                        Errors = new List<string> {
+                            "Invalid Email!"
+                        }
+                    });
+
                 // Checking if the email is already exist 
                 var userExist = await _userManager.FindByEmailAsync(requestDto.Email);
                 if (userExist != null)
@@ -47,33 +65,84 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
                         }
                     });
                 }
+
+                /*
+                // Register as an admin from normal registration End Point is Forbidden 
+                if (requestDto.Role.ToUpper() == "ADMIN")
+                    return BadRequest(new AuthResult ()
+                   {
+                       Result = false ,
+                       Errors = new List<string> {
+                       "This Action is Forbidden!"
+                       }
+                   });
+                */
+                // Password Match 
+                if (requestDto.Password != requestDto.ConfirmePassword) 
+                    return BadRequest(new AuthResult ()
+                   {
+                       Result = false ,
+                       Errors = new List<string> {
+                       "Un Matched Passwords!"
+                       }
+                   });
+                // Validate The Phone Number
+                if (!Regex.IsMatch(requestDto.PhoneNumber , @"^\d{11}$")) 
+                    return BadRequest(new AuthResult()
+                    {
+                        Result = false,
+                        Errors = new List<string> {
+                            "Invalid Phone Number!"
+                        }
+                    });
+
                 // create a user 
-                var newUser = new ApplicationUser()
+                var newUserIdentityData = new ApplicationUser()
                 {
                     Email = requestDto.Email,
-                    UserName = requestDto.Email 
+                    UserName = requestDto.Email ,
+                    PhoneNumber = requestDto.PhoneNumber
                 };
-                var isCreated = await _userManager.CreateAsync(newUser , requestDto.Password);
+/*
+                var newUser = new User()
+                {
+                    FirstName = requestDto.FirstName,
+                    LastName  = requestDto.LastName,
+                    DisplayName = $"{FirstName} {LastName}"
+                };
+*/
+                var isCreated = await _userManager.CreateAsync(newUserIdentityData, requestDto.Password);
+                
 
                 if (isCreated.Succeeded)
                 {
                     // Generate the token
-                    var token = GenerateJwtToken(newUser);
+                    var token = GenerateJwtToken(newUserIdentityData);
+
+                    /*
+                        // If his role is  user put him in a user table , if it's a trader put him in a trader table 
+                        if (requestDto.Role.ToUpper == "USER")
+                        {
+                            await _userService.Add(newUser);
+                            AddRoleAsync(requestDto.Email,"User")
+                        }else if (requestDto.Role.ToUpper == "TRADER"){
+                                await _TraderService.Add(newUser); // I will make this service 
+                                AddRoleAsync(requestDto.Email,"Trader")             
+                        }
+                    */
+
                     return Ok(new AuthResult()
                     {
                         Result = true,
                         Token = token
                     });
+
                 }
 
-                return BadRequest(new AuthResult()
+                return  BadRequest(new AuthResult()
                 {
-                    Result = false ,
-                    Errors = new List<string>
-                    {
-                        "Server Error !"
-                    }
-
+                    Result = false,
+                    Errors = isCreated.Errors.Select(des => des.Description).ToList()
                 });
             }
 
@@ -94,7 +163,7 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
                         Result = false,
                         Errors = new List<string>()
                         {
-                            "Invalid payload"
+                            "Invalid Email or Password !"
                         }
                     });
                 var isCorrect = await _userManager.CheckPasswordAsync(existingUser,loginRequest.Password);
@@ -105,7 +174,7 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
                         Result = false,
                         Errors = new List<string>()
                         {
-                            "Invalid Credentials"
+                            "Invalid Email or Password !"
                         }
                     });
                 var jwtToken = GenerateJwtToken(existingUser);
@@ -121,7 +190,7 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
                 Result = false ,
                 Errors = new List<string>()
                 {
-                    "Invalid Payload"
+                    "Invalid Email or Password !"
                 }
             });
         }
@@ -149,5 +218,17 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
             var token = jwtTokenHandler.CreateToken(tokenDescriptor);
             return jwtTokenHandler.WriteToken(token);
         }
+/*        public async Task<string> AddRoleAsync(string email , string role)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null || !await _roleManager.RoleExistsAsync(role))
+                return "Invalid User Id or Role ";
+            if (await _userManager.IsInRoleAsync(user, role))
+                return "User already assigned to this role";
+            var result = await _userManager.AddToRoleAsync(user, role);
+            if (result.Succeeded)
+                return string.Empty;
+            else return "Something went wrong";
+        }*/
     }
 }
