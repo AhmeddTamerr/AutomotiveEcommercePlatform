@@ -45,7 +45,7 @@ namespace ReactApp1.Server.Data
                 .HasKey(c => c.ApplicationUserId);
 
             modelBuilder.Entity<Cart>()
-            .HasKey(k => new { k.CarId, k.CartId});
+            .HasKey(k =>k.CartId});
 
             modelBuilder.Entity<CarsInTheCart>()
                 .HasKey(t => new { t.CarId, t.CartId});
