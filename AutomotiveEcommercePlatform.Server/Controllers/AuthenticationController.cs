@@ -5,12 +5,13 @@ using System.Text;
 using System.Text.RegularExpressions;
 using AutomotiveEcommercePlatform.Server.Configurations;
 using AutomotiveEcommercePlatform.Server.Data;
+using AutomotiveEcommercePlatform.Server.DTOs;
 using AutomotiveEcommercePlatform.Server.Models;
-using AutomotiveEcommercePlatform.Server.Models.DTOs;
 using AutomotiveEcommercePlatform.Server.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+
 
 namespace AutomotiveEcommercePlatform.Server.Controllers
 {
@@ -21,17 +22,14 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _configuration;
-        //private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IAuthService _authService;
 
 
-        // private readonly IUserService _userService;
-
-        public AuthenticationController(UserManager<ApplicationUser> userManager , IConfiguration configuration /*, RoleManager<IdentityRole> roleManager , IUserService userService;*/)
+        public AuthenticationController(UserManager<ApplicationUser> userManager , IConfiguration configuration, IAuthService authService)
         {
             _userManager = userManager;
             _configuration = configuration;
-            //_roleManager = roleManager;
-            //_userService = userService;
+            _authService = authService;
         }
 
 
@@ -66,17 +64,6 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
                     });
                 }
 
-                /*
-                // Register as an admin from normal registration End Point is Forbidden 
-                if (requestDto.Role.ToUpper() == "ADMIN")
-                    return BadRequest(new AuthResult ()
-                   {
-                       Result = false ,
-                       Errors = new List<string> {
-                       "This Action is Forbidden!"
-                       }
-                   });
-                */
                 // Password Match 
                 if (requestDto.Password != requestDto.ConfirmePassword) 
                     return BadRequest(new AuthResult ()
@@ -86,6 +73,7 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
                        "Un Matched Passwords!"
                        }
                    });
+
                 // Validate The Phone Number
                 if (!Regex.IsMatch(requestDto.PhoneNumber , @"^\d{11}$")) 
                     return BadRequest(new AuthResult()
@@ -97,55 +85,58 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
                     });
 
                 // create a user 
-                var newUserIdentityData = new ApplicationUser()
+                var newUser = new ApplicationUser()
                 {
                     Email = requestDto.Email,
                     UserName = requestDto.Email ,
-                    PhoneNumber = requestDto.PhoneNumber
-                };
-/*
-                var newUser = new User()
-                {
+                    PhoneNumber = requestDto.PhoneNumber,
                     FirstName = requestDto.FirstName,
-                    LastName  = requestDto.LastName,
-                    DisplayName = $"{FirstName} {LastName}"
+                    LastName = requestDto.LastName,
                 };
-*/
-                var isCreated = await _userManager.CreateAsync(newUserIdentityData, requestDto.Password);
+
+                // Validate the role + Adding User to a role 
+                if (requestDto.Role.ToUpper() == "ADMIN" ||(requestDto.Role.ToUpper() != "USER" && requestDto.Role.ToUpper() != "TRADER"))
+                    return BadRequest (new AuthResult()
+                    {
+                        Result = false,
+                        Errors = new List<string> {
+                            "This Action is forbidden !"
+                        }
+                    });
+
+                var isCreated = await _userManager.CreateAsync(newUser, requestDto.Password);
                 
 
                 if (isCreated.Succeeded)
                 {
                     // Generate the token
-                    var token = GenerateJwtToken(newUserIdentityData);
+                    var token = GenerateJwtToken(newUser);
 
-                    /*
-                        // If his role is  user put him in a user table , if it's a trader put him in a trader table 
-                        if (requestDto.Role.ToUpper == "USER")
-                        {
-                            await _userService.Add(newUser);
-                            AddRoleAsync(requestDto.Email,"User")
-                        }else if (requestDto.Role.ToUpper == "TRADER"){
-                                await _TraderService.Add(newUser); // I will make this service 
-                                AddRoleAsync(requestDto.Email,"Trader")             
-                        }
-                    */
+                    var UserToRole = new AddRoleModel
+                    {
+                        role = requestDto.Role,
+                        email = requestDto.Email
+                    };
+                    var AddRoleResult = await _authService.AddRoleAsync(UserToRole);
+
+                    if (AddRoleResult.Result == false)
+                    {
+                        return BadRequest(AddRoleResult);
+                    }
 
                     return Ok(new AuthResult()
                     {
                         Result = true,
                         Token = token
                     });
-
                 }
-
                 return  BadRequest(new AuthResult()
                 {
                     Result = false,
                     Errors = isCreated.Errors.Select(des => des.Description).ToList()
                 });
             }
-
+            
             return BadRequest();
         }
 
@@ -218,17 +209,5 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
             var token = jwtTokenHandler.CreateToken(tokenDescriptor);
             return jwtTokenHandler.WriteToken(token);
         }
-/*        public async Task<string> AddRoleAsync(string email , string role)
-        {
-            var user = await _userManager.FindByEmailAsync(email);
-            if (user == null || !await _roleManager.RoleExistsAsync(role))
-                return "Invalid User Id or Role ";
-            if (await _userManager.IsInRoleAsync(user, role))
-                return "User already assigned to this role";
-            var result = await _userManager.AddToRoleAsync(user, role);
-            if (result.Succeeded)
-                return string.Empty;
-            else return "Something went wrong";
-        }*/
     }
 }
