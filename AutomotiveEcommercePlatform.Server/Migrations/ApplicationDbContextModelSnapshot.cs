@@ -87,22 +87,19 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("CarCart", b =>
+            modelBuilder.Entity("AutomotiveEcommercePlatform.Server.Models.CarsInTheCart", b =>
                 {
-                    b.Property<int>("CarsId")
+                    b.Property<int>("CarId")
                         .HasColumnType("int");
 
-                    b.Property<int>("CartsCarId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("CartsUserId")
+                    b.Property<string>("CartId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("CarsId", "CartsCarId", "CartsUserId");
+                    b.HasKey("CarId", "CartId");
 
-                    b.HasIndex("CartsCarId", "CartsUserId");
+                    b.HasIndex("CartId");
 
-                    b.ToTable("CarsInCart", (string)null);
+                    b.ToTable("CarsInTheCart");
                 });
 
             modelBuilder.Entity("DataBase_LastTesting.Models.Car", b =>
@@ -191,12 +188,10 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
                     b.Property<int>("CarId")
                         .HasColumnType("int");
 
-                    b.Property<string>("UserId")
+                    b.Property<string>("CartId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("CarId", "UserId");
-
-                    b.HasIndex("UserId");
+                    b.HasKey("CarId", "CartId");
 
                     b.ToTable("Cart");
                 });
@@ -452,19 +447,24 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("CarCart", b =>
+            modelBuilder.Entity("AutomotiveEcommercePlatform.Server.Models.CarsInTheCart", b =>
                 {
-                    b.HasOne("DataBase_LastTesting.Models.Car", null)
-                        .WithMany()
-                        .HasForeignKey("CarsId")
+                    b.HasOne("DataBase_LastTesting.Models.Car", "Car")
+                        .WithMany("CarsInTheCart")
+                        .HasForeignKey("CarId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DataBase_LastTesting.Models.Cart", null)
-                        .WithMany()
-                        .HasForeignKey("CartsCarId", "CartsUserId")
+                    b.HasOne("DataBase_LastTesting.Models.Cart", "Cart")
+                        .WithMany("CarsInTheCart")
+                        .HasForeignKey("CartId")
+                        .HasPrincipalKey("CartId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Car");
+
+                    b.Navigation("Cart");
                 });
 
             modelBuilder.Entity("DataBase_LastTesting.Models.Car", b =>
@@ -505,11 +505,19 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
 
             modelBuilder.Entity("DataBase_LastTesting.Models.Cart", b =>
                 {
-                    b.HasOne("DataBase_LastTesting.Models.User", "User")
+                    b.HasOne("DataBase_LastTesting.Models.Car", "Car")
                         .WithMany()
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("CarId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("DataBase_LastTesting.Models.User", "User")
+                        .WithOne("Cart")
+                        .HasForeignKey("DataBase_LastTesting.Models.Cart", "CartId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Car");
 
                     b.Navigation("User");
                 });
@@ -613,6 +621,13 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
             modelBuilder.Entity("DataBase_LastTesting.Models.Car", b =>
                 {
                     b.Navigation("CarReview");
+
+                    b.Navigation("CarsInTheCart");
+                });
+
+            modelBuilder.Entity("DataBase_LastTesting.Models.Cart", b =>
+                {
+                    b.Navigation("CarsInTheCart");
                 });
 
             modelBuilder.Entity("DataBase_LastTesting.Models.Order", b =>
@@ -629,6 +644,9 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
 
             modelBuilder.Entity("DataBase_LastTesting.Models.User", b =>
                 {
+                    b.Navigation("Cart")
+                        .IsRequired();
+
                     b.Navigation("Order");
 
                     b.Navigation("Review");

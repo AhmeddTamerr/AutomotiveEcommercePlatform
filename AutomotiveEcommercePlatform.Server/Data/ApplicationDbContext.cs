@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Emit;
+using AutomotiveEcommercePlatform.Server.Models;
 
 namespace ReactApp1.Server.Data
 {
@@ -44,13 +45,29 @@ namespace ReactApp1.Server.Data
                 .HasKey(c => c.ApplicationUserId);
 
             modelBuilder.Entity<Cart>()
-            .HasKey(k => new { k.CarId, k.UserId });
+            .HasKey(k => new { k.CarId, k.CartId});
 
+            modelBuilder.Entity<CarsInTheCart>()
+                .HasKey(t => new { t.CarId, t.CartId});
 
-            modelBuilder.Entity<Car>() //configuring the relation between the cart and the car 
-                .HasMany(c => c.Carts)
-                .WithMany(c => c.Cars)
-            .UsingEntity(t => t.ToTable("CarsInCart"));
+            modelBuilder.Entity<CarsInTheCart>()
+                .HasOne(pt => pt.Car)
+                .WithMany(p => p.CarsInTheCart)
+                .HasForeignKey(f => f.CarId)
+                .HasPrincipalKey(p => p.Id);
+
+            modelBuilder.Entity<CarsInTheCart>()
+                .HasOne(o => o.Cart)
+                .WithMany(m => m.CarsInTheCart)
+                .HasForeignKey(k => k.CartId)
+                .HasPrincipalKey(p => p.CartId);
+
+            modelBuilder.Entity<Cart>()
+                .HasOne(p => p.User)
+                .WithOne(c => c.Cart)
+                .HasForeignKey<Cart>(k => k.CartId)
+                .HasPrincipalKey<User>(p => p.ApplicationUserId);
+
 
             modelBuilder.Entity<Car>(eb => eb.Property(b => b.Price).HasColumnType("Decimal(15,2)"));
 
@@ -72,6 +89,10 @@ namespace ReactApp1.Server.Data
             modelBuilder.Entity<User>()
                 .Property(c => c.TraderId)
                 .IsRequired(false);
+
+            //modelBuilder.Entity<User>()
+            //    .Property(pt => pt.ApplicationUserId)
+            //    .HasColumnName("UserId");
 
 
         }

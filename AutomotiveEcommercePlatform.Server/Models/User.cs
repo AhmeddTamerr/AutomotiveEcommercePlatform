@@ -23,6 +23,6 @@ namespace DataBase_LastTesting.Models
         public int? TraderId { get; set; }
         public List<CarReview> Review { get; set;}
         public List<TraderRating> TradersRating { get; set; }
-
+        public Cart Cart { get; set; }
     }
 }

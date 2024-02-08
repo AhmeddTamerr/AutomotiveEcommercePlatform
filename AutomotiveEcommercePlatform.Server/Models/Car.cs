@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Runtime.CompilerServices;
+using AutomotiveEcommercePlatform.Server.Models;
 
 namespace DataBase_LastTesting.Models
 {
@@ -20,6 +21,8 @@ namespace DataBase_LastTesting.Models
         public Trader Trader { get; set; }
         public Order Order { get; set; }
         public List<CarReview> CarReview { get; set;}
-        public ICollection<Cart> Carts { get; set; }
+        //public ICollection<Cart> Carts { get; set; }
+        public List<CarsInTheCart> CarsInTheCart { get; set; }
+
     }
 }

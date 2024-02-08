@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace AutomotiveEcommercePlatform.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class AddingModels : Migration
+    public partial class AddingModelsAndUpdating : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -50,24 +50,6 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
                         column: x => x.TraderId,
                         principalTable: "Traders",
                         principalColumn: "TraderId");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Cart",
-                columns: table => new
-                {
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    CarId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Cart", x => new { x.CarId, x.UserId });
-                    table.ForeignKey(
-                        name: "FK_Cart_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "ApplicationUserId",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -179,27 +161,51 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CarsInCart",
+                name: "Cart",
                 columns: table => new
                 {
-                    CarsId = table.Column<int>(type: "int", nullable: false),
-                    CartsCarId = table.Column<int>(type: "int", nullable: false),
-                    CartsUserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    CartId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CarId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CarsInCart", x => new { x.CarsId, x.CartsCarId, x.CartsUserId });
+                    table.PrimaryKey("PK_Cart", x => new { x.CarId, x.CartId });
+                    table.UniqueConstraint("AK_Cart_CartId", x => x.CartId);
                     table.ForeignKey(
-                        name: "FK_CarsInCart_Cars_CarsId",
-                        column: x => x.CarsId,
+                        name: "FK_Cart_Cars_CarId",
+                        column: x => x.CarId,
                         principalTable: "Cars",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_CarsInCart_Cart_CartsCarId_CartsUserId",
-                        columns: x => new { x.CartsCarId, x.CartsUserId },
+                        name: "FK_Cart_Users_CartId",
+                        column: x => x.CartId,
+                        principalTable: "Users",
+                        principalColumn: "ApplicationUserId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CarsInTheCart",
+                columns: table => new
+                {
+                    CartId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CarId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CarsInTheCart", x => new { x.CarId, x.CartId });
+                    table.ForeignKey(
+                        name: "FK_CarsInTheCart_Cars_CarId",
+                        column: x => x.CarId,
+                        principalTable: "Cars",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_CarsInTheCart_Cart_CartId",
+                        column: x => x.CartId,
                         principalTable: "Cart",
-                        principalColumns: new[] { "CarId", "UserId" },
+                        principalColumn: "CartId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -224,14 +230,9 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
                 column: "TraderId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CarsInCart_CartsCarId_CartsUserId",
-                table: "CarsInCart",
-                columns: new[] { "CartsCarId", "CartsUserId" });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Cart_UserId",
-                table: "Cart",
-                column: "UserId");
+                name: "IX_CarsInTheCart_CartId",
+                table: "CarsInTheCart",
+                column: "CartId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Order_UserApplicationUserId",
@@ -263,16 +264,16 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
                 name: "CarReview");
 
             migrationBuilder.DropTable(
-                name: "CarsInCart");
+                name: "CarsInTheCart");
 
             migrationBuilder.DropTable(
                 name: "TraderRating");
 
             migrationBuilder.DropTable(
-                name: "Cars");
+                name: "Cart");
 
             migrationBuilder.DropTable(
-                name: "Cart");
+                name: "Cars");
 
             migrationBuilder.DropTable(
                 name: "Order");
