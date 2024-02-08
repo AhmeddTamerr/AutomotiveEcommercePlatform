@@ -44,25 +44,25 @@ namespace ReactApp1.Server.Data
             modelBuilder.Entity<User>()
                 .HasKey(c => c.ApplicationUserId);
 
-            modelBuilder.Entity<Cart>()
+            modelBuilder.Entity<Cart>()     //the update to cart just copy it and replace it with the old one 
             .HasKey(k =>k.CartId});
 
-            modelBuilder.Entity<CarsInTheCart>()
+            modelBuilder.Entity<CarsInTheCart>()   //copy this and paste it and create the class of carsinthecart
                 .HasKey(t => new { t.CarId, t.CartId});
 
-            modelBuilder.Entity<CarsInTheCart>()
+            modelBuilder.Entity<CarsInTheCart>() //copy this too
                 .HasOne(pt => pt.Car)
                 .WithMany(p => p.CarsInTheCart)
                 .HasForeignKey(f => f.CarId)
                 .HasPrincipalKey(p => p.Id);
 
-            modelBuilder.Entity<CarsInTheCart>()
+            modelBuilder.Entity<CarsInTheCart>() //this too
                 .HasOne(o => o.Cart)
                 .WithMany(m => m.CarsInTheCart)
                 .HasForeignKey(k => k.CartId)
                 .HasPrincipalKey(p => p.CartId);
 
-            modelBuilder.Entity<Cart>()
+            modelBuilder.Entity<Cart>()   //this too
                 .HasOne(p => p.User)
                 .WithOne(c => c.Cart)
                 .HasForeignKey<Cart>(k => k.CartId)
