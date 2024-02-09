@@ -8,6 +8,8 @@ namespace DataBase_LastTesting.Models
         //public int TraderId { get; set; }
         public string TraderId { get; set; }
         public List<Car> Car { get; set; }
-        public List<TraderRating> TraderRating { get; set; }
+
+        public ICollection<User> User { get; set; }
+        public List<TraderRating> TraderRatings { get; set; }
     }
 }

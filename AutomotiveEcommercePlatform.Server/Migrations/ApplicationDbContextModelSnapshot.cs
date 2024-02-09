@@ -104,22 +104,19 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("CarCart", b =>
+            modelBuilder.Entity("AutomotiveEcommercePlatform.Server.Models.CartItem", b =>
                 {
-                    b.Property<int>("CarsId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CartsCarId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("CartsUserId")
+                    b.Property<string>("CartId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("CarsId", "CartsCarId", "CartsUserId");
+                    b.Property<int>("CarId")
+                        .HasColumnType("int");
 
-                    b.HasIndex("CartsCarId", "CartsUserId");
+                    b.HasKey("CartId", "CarId");
 
-                    b.ToTable("CarsInCart", (string)null);
+                    b.HasIndex("CarId");
+
+                    b.ToTable("CartItems");
                 });
 
             modelBuilder.Entity("DataBase_LastTesting.Models.Car", b =>
@@ -191,7 +188,6 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -200,22 +196,17 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("CarReview");
+                    b.ToTable("CarReviews");
                 });
 
             modelBuilder.Entity("DataBase_LastTesting.Models.Cart", b =>
                 {
-                    b.Property<int>("CarId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
+                    b.Property<string>("CartId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("CarId", "UserId");
+                    b.HasKey("CartId");
 
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Cart");
+                    b.ToTable("Carts");
                 });
 
             modelBuilder.Entity("DataBase_LastTesting.Models.Order", b =>
@@ -235,14 +226,13 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
                         .HasDefaultValueSql("GETDATE()");
 
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Order");
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("DataBase_LastTesting.Models.Trader", b =>
@@ -280,7 +270,7 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("TraderRating");
+                    b.ToTable("TraderRatings");
                 });
 
             modelBuilder.Entity("DataBase_LastTesting.Models.User", b =>
@@ -288,14 +278,7 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("TraderId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.HasKey("UserId");
-
-                    b.HasIndex("TraderId")
-                        .IsUnique()
-                        .HasFilter("[TraderId] IS NOT NULL");
 
                     b.ToTable("Users");
                 });
@@ -433,19 +416,23 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("CarCart", b =>
+            modelBuilder.Entity("AutomotiveEcommercePlatform.Server.Models.CartItem", b =>
                 {
-                    b.HasOne("DataBase_LastTesting.Models.Car", null)
-                        .WithMany()
-                        .HasForeignKey("CarsId")
+                    b.HasOne("DataBase_LastTesting.Models.Car", "Car")
+                        .WithMany("CartItems")
+                        .HasForeignKey("CarId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DataBase_LastTesting.Models.Cart", null)
-                        .WithMany()
-                        .HasForeignKey("CartsCarId", "CartsUserId")
+                    b.HasOne("DataBase_LastTesting.Models.Cart", "Cart")
+                        .WithMany("CartItems")
+                        .HasForeignKey("CartId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Car");
+
+                    b.Navigation("Cart");
                 });
 
             modelBuilder.Entity("DataBase_LastTesting.Models.Car", b =>
@@ -473,9 +460,7 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
 
                     b.HasOne("DataBase_LastTesting.Models.User", "User")
                         .WithMany("Review")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
 
                     b.Navigation("Car");
 
@@ -484,22 +469,18 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
 
             modelBuilder.Entity("DataBase_LastTesting.Models.Cart", b =>
                 {
-                    b.HasOne("DataBase_LastTesting.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
+                    b.HasOne("DataBase_LastTesting.Models.User", null)
+                        .WithOne()
+                        .HasForeignKey("DataBase_LastTesting.Models.Cart", "CartId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DataBase_LastTesting.Models.Order", b =>
                 {
                     b.HasOne("DataBase_LastTesting.Models.User", "User")
                         .WithMany("Order")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
 
                     b.Navigation("User");
                 });
@@ -516,13 +497,13 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
             modelBuilder.Entity("DataBase_LastTesting.Models.TraderRating", b =>
                 {
                     b.HasOne("DataBase_LastTesting.Models.Trader", "Trader")
-                        .WithMany("TraderRating")
+                        .WithMany("TraderRatings")
                         .HasForeignKey("TraderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("DataBase_LastTesting.Models.User", "User")
-                        .WithMany("TradersRating")
+                        .WithMany("TradersRatings")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -534,17 +515,11 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
 
             modelBuilder.Entity("DataBase_LastTesting.Models.User", b =>
                 {
-                    b.HasOne("DataBase_LastTesting.Models.Trader", "Trader")
-                        .WithOne()
-                        .HasForeignKey("DataBase_LastTesting.Models.User", "TraderId");
-
                     b.HasOne("AutomotiveEcommercePlatform.Server.Data.ApplicationUser", null)
                         .WithOne()
                         .HasForeignKey("DataBase_LastTesting.Models.User", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Trader");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -601,6 +576,13 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
             modelBuilder.Entity("DataBase_LastTesting.Models.Car", b =>
                 {
                     b.Navigation("CarReview");
+
+                    b.Navigation("CartItems");
+                });
+
+            modelBuilder.Entity("DataBase_LastTesting.Models.Cart", b =>
+                {
+                    b.Navigation("CartItems");
                 });
 
             modelBuilder.Entity("DataBase_LastTesting.Models.Order", b =>
@@ -612,7 +594,7 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
                 {
                     b.Navigation("Car");
 
-                    b.Navigation("TraderRating");
+                    b.Navigation("TraderRatings");
                 });
 
             modelBuilder.Entity("DataBase_LastTesting.Models.User", b =>
@@ -621,7 +603,7 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
 
                     b.Navigation("Review");
 
-                    b.Navigation("TradersRating");
+                    b.Navigation("TradersRatings");
                 });
 #pragma warning restore 612, 618
         }

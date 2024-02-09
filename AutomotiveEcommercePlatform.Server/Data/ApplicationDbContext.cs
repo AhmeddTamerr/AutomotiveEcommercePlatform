@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Emit;
+using AutomotiveEcommercePlatform.Server.Models;
 
 namespace ReactApp1.Server.Data
 {
@@ -48,14 +49,21 @@ namespace ReactApp1.Server.Data
             modelBuilder.Entity<Trader>()
                 .HasKey(c => c.TraderId);
 
+
             modelBuilder.Entity<Cart>()
-            .HasKey(k => new { k.CarId, k.UserId });
+                .HasOne<User>()
+                .WithOne()
+                .HasForeignKey<Cart>(c => c.CartId)
+                .HasPrincipalKey<User>(c => c.UserId);
+
+            modelBuilder.Entity<Cart>()
+                .HasKey(k => k.CartId);
 
 
-            modelBuilder.Entity<Car>() //configuring the relation between the cart and the car 
-                .HasMany(c => c.Carts)
-                .WithMany(c => c.Cars)
-            .UsingEntity(t => t.ToTable("CarsInCart"));
+            /*modelBuilder.Entity<Car>() //configuring the relation between the cart and the car 
+                .HasMany(c => c.Cart)
+                .WithMany(c => c.Car)
+            .UsingEntity(t => t.ToTable("CarsInCart"));*/
 
             modelBuilder.Entity<Car>(eb => eb.Property(b => b.Price).HasColumnType("Decimal(15,2)"));
 
@@ -67,19 +75,67 @@ namespace ReactApp1.Server.Data
                 .Property(c => c.Comment)
                 .IsRequired(false);
 
-            modelBuilder.Entity<User>()
+            /*modelBuilder.Entity<User>()
                 .HasOne(pt => pt.Trader)
                 .WithOne()
                 .HasForeignKey<User>(k => k.TraderId)
-                .HasPrincipalKey<Trader>(k => k.TraderId);
-               
+                .HasPrincipalKey<Trader>(k => k.TraderId);*/
 
-            modelBuilder.Entity<User>()
+           
+            /*modelBuilder.Entity<User>()
                 .Property(c => c.TraderId)
-                .IsRequired(false);
+                .IsRequired(false);*/
+
+            // Cart ,  Car with cartItems 
+
+            modelBuilder.Entity<Cart>()
+                .HasMany(c => c.Car)
+                .WithMany(t => t.Cart)
+                .UsingEntity<CartItem>(
+                    j =>
+                    {
+                        j
+                            .HasOne(c => c.Cart)
+                            .WithMany(t => t.CartItems)
+                            .HasForeignKey(pt => pt.CartId);
+
+                        j
+                            .HasOne(c => c.Car)
+                            .WithMany(t => t.CartItems)
+                            .HasForeignKey(pt => pt.CarId);
+
+                        j.HasKey(t => new { t.CartId, t.CarId });
+                    }
+                );
+            modelBuilder.Entity<Trader>()
+                .HasMany(c => c.User)
+                .WithMany(t => t.Trader)
+                .UsingEntity<TraderRating>(
+                    j =>
+                    {
+                        j
+                            .HasOne(c => c.Trader)
+                            .WithMany(t => t.TraderRatings)
+                            .HasForeignKey(pt => pt.TraderId);
+
+                        j
+                            .HasOne(c => c.User)
+                            .WithMany(t => t.TradersRatings)
+                            .HasForeignKey(pt => pt.UserId);
+
+                        j.HasKey(t => t.Id);
+                    }
+                );
         }
         public DbSet<Car> Cars { get; set; }
-        public DbSet<User> Users { get; set; }
+        public DbSet<CarReview> CarReviews { get; set; }
+        public DbSet<Cart> Carts { get; set; }
+        public DbSet<CartItem> CartItems { get; set; }
+        public DbSet<Order> Orders { get; set; }
         public DbSet<Trader> Traders { get; set; }
+        public DbSet<TraderRating> TraderRatings { get; set; }
+        public DbSet<User> Users { get; set; }
+        
+        
     }
 }
