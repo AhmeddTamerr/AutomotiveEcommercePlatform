@@ -11,6 +11,8 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+
+
             migrationBuilder.AddColumn<string>(
                 name: "FirstName",
                 table: "AspNetUsers",
@@ -26,6 +28,7 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
                 maxLength: 50,
                 nullable: false,
                 defaultValue: "");
+
 
             migrationBuilder.AddColumn<string>(
                 name: "DisplayName",
@@ -103,7 +106,8 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
                         name: "FK_Orders_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "UserId");
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -145,7 +149,7 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
                     Price = table.Column<decimal>(type: "Decimal(15,2)", nullable: false),
                     CarCategory = table.Column<string>(type: "nvarchar(15)", maxLength: 15, nullable: false),
                     CarImage = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    InStock = table.Column<bool>(type: "bit", nullable: false),
+                    InStock = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
                     OrderId = table.Column<int>(type: "int", nullable: true),
                     TraderId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
@@ -161,7 +165,8 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
                         name: "FK_Cars_Traders_TraderId",
                         column: x => x.TraderId,
                         principalTable: "Traders",
-                        principalColumn: "TraderId");
+                        principalColumn: "TraderId",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -188,7 +193,8 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
                         name: "FK_CarReviews_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "UserId");
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -294,6 +300,7 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
             migrationBuilder.DropColumn(
                 name: "LastName",
                 table: "AspNetUsers");
+
         }
     }
 }

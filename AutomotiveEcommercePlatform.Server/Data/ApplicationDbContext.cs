@@ -65,6 +65,11 @@ namespace ReactApp1.Server.Data
                 .WithMany(c => c.Car)
             .UsingEntity(t => t.ToTable("CarsInCart"));*/
 
+            // Set a true default value for InStock Property 
+            modelBuilder.Entity<Car>()
+                .Property(e => e.InStock)
+                .HasDefaultValue(true);
+
             modelBuilder.Entity<Car>(eb => eb.Property(b => b.Price).HasColumnType("Decimal(15,2)"));
 
             modelBuilder.Entity<Car>()
@@ -75,13 +80,22 @@ namespace ReactApp1.Server.Data
                 .Property(c => c.Comment)
                 .IsRequired(false);
 
+            modelBuilder.Entity<CarReview>()
+                .Property(c => c.UserId)
+                .IsRequired(true);
+
+
+            modelBuilder.Entity<Order>()
+                .Property(c => c.UserId)
+                .IsRequired(true);
+
             /*modelBuilder.Entity<User>()
                 .HasOne(pt => pt.Trader)
                 .WithOne()
                 .HasForeignKey<User>(k => k.TraderId)
                 .HasPrincipalKey<Trader>(k => k.TraderId);*/
 
-           
+
             /*modelBuilder.Entity<User>()
                 .Property(c => c.TraderId)
                 .IsRequired(false);*/

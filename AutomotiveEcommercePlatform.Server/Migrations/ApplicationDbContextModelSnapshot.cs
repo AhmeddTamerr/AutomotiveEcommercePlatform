@@ -142,7 +142,9 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("InStock")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
                     b.Property<string>("ModelName")
                         .IsRequired()
@@ -159,6 +161,7 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
                         .HasColumnType("Decimal(15,2)");
 
                     b.Property<string>("TraderId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -188,6 +191,7 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -226,6 +230,7 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
                         .HasDefaultValueSql("GETDATE()");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -363,10 +368,12 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("ProviderKey")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
@@ -403,10 +410,12 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.Property<string>("Value")
                         .HasColumnType("nvarchar(max)");
@@ -443,7 +452,9 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
 
                     b.HasOne("DataBase_LastTesting.Models.Trader", "Trader")
                         .WithMany("Car")
-                        .HasForeignKey("TraderId");
+                        .HasForeignKey("TraderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Order");
 
@@ -460,7 +471,9 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
 
                     b.HasOne("DataBase_LastTesting.Models.User", "User")
                         .WithMany("Review")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Car");
 
@@ -480,7 +493,9 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
                 {
                     b.HasOne("DataBase_LastTesting.Models.User", "User")
                         .WithMany("Order")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });

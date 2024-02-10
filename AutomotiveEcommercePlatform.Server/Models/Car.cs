@@ -18,6 +18,7 @@ namespace DataBase_LastTesting.Models
         public string CarImage { get; set; } // Go Back 
         public bool InStock { get; set; }
         public int? OrderId { get; set; }
+        public string TraderId { get; set; }
         public Trader Trader { get; set; }
         public Order Order { get; set; }
         public List<CarReview> CarReview { get; set;}

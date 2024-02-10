@@ -8,9 +8,12 @@ using AutomotiveEcommercePlatform.Server.Data;
 using AutomotiveEcommercePlatform.Server.DTOs;
 using AutomotiveEcommercePlatform.Server.Models;
 using AutomotiveEcommercePlatform.Server.Services;
+using DataBase_LastTesting.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using ReactApp1.Server.Data;
 
 
 namespace AutomotiveEcommercePlatform.Server.Controllers
@@ -23,13 +26,15 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IConfiguration _configuration;
         private readonly IAuthService _authService;
+        private readonly ApplicationDbContext _context;
 
 
-        public AuthenticationController(UserManager<ApplicationUser> userManager , IConfiguration configuration, IAuthService authService)
+        public AuthenticationController(UserManager<ApplicationUser> userManager , IConfiguration configuration, IAuthService authService , ApplicationDbContext context)
         {
             _userManager = userManager;
             _configuration = configuration;
             _authService = authService;
+            _context = context;
         }
 
 
@@ -40,6 +45,18 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
             // validate the incoming request
             if (ModelState.IsValid)
             {
+
+                // Validate First Name and Last Name 
+                if (requestDto.FirstName == null || requestDto.LastName == null)
+                {
+                    return BadRequest(new AuthResult()
+                    {
+                        Result = false,
+                        Errors = new List<string> {
+                            "This Field is required !"
+                        }
+                    });
+                }
 
                 // Validate the email 
                 if (!Regex.IsMatch(requestDto.Email, @"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$"))
@@ -123,6 +140,13 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
                     {
                         return BadRequest(AddRoleResult);
                     }
+
+                    /*var createdUser = _userManager.FindByEmailAsync(requestDto.Email);
+                    if (requestDto.Role.ToUpper() == "USER")
+                    {
+                       // await _context.Users.AddAsync(createdUser.Id);
+                        //_context.SaveChanges();
+                    }*/
 
                     return Ok(new AuthResult()
                     {
