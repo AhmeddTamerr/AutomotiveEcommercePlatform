@@ -14,24 +14,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddAuthorization();
 
-/*builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
-    .AddEntityFrameworkStores<ApplicationDbContext>();*/
+
+builder.Services.AddDefaultIdentity < ApplicationUser>()
+    .AddRoles<IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
 
 
-builder.Services.AddDefaultIdentity < ApplicationUser>().AddRoles<IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
-
-
-
-/*builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddRoles<IdentityRole>();*/
-
-// Adding Identity Role Services 
-//builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
-//builder.Services.AddScoped<RoleManager<IdentityRole>>();
-
-
-// Add services to the container.
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -43,15 +30,12 @@ builder.Services.AddSwaggerGen();
 builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection("JwtConfig"));
 
 
-
 var connectionString = builder.Configuration.GetConnectionString("ApplicationDbContextConnection") ?? throw new InvalidOperationException("Connection string 'ApplicationDbContextConnection' not found.");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 
 
 // Adding IAuthService
-
-//builder.Services.AddTransient<IAuthService, AuthService>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 
@@ -77,9 +61,6 @@ builder.Services.AddAuthentication(options =>
         ValidateLifetime = true
     };
 });
-
-
-
 
 
 
