@@ -1,4 +1,6 @@
-﻿namespace DataBase_LastTesting.Models
+﻿using Newtonsoft.Json;
+
+namespace DataBase_LastTesting.Models
 {
     public class CarReview
     {
@@ -7,7 +9,9 @@
         public string Comment { get; set; }
         public string UserId { get; set; }
         public int CarId { get; set; }
+        [JsonIgnore]
         public User User { get; set; }
+        [JsonIgnore]
         public Car Car { get; set; }
     }
 }

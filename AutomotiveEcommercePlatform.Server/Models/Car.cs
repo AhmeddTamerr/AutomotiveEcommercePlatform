@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Runtime.CompilerServices;
 using AutomotiveEcommercePlatform.Server.Models;
+using Newtonsoft.Json;
 
 namespace DataBase_LastTesting.Models
 {
@@ -19,11 +20,16 @@ namespace DataBase_LastTesting.Models
         public bool InStock { get; set; }
         public int? OrderId { get; set; }
         public string TraderId { get; set; }
-        public Trader Trader { get; set; }
-        public Order Order { get; set; }
-        public List<CarReview> CarReview { get; set;}
-        public ICollection<Cart> Cart { get; set; }
 
+        [JsonIgnore]
+        public Trader Trader { get; set; }
+        [JsonIgnore]
+        public Order Order { get; set; }
+        [JsonIgnore]
+        public List<CarReview> CarReview { get; set;}
+        [JsonIgnore]
+        public ICollection<Cart> Cart { get; set; }
+        [JsonIgnore]
         public List<CartItem> CartItems { get; set; }
     }
 }

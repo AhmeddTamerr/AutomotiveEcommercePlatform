@@ -24,17 +24,19 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
 
 
 
-/*        [HttpGet]
-        public async Task<IActionResult> GetTraderCars(string traderId )
+        [HttpGet]
+        public async Task<IActionResult> GetTraderCars(string traderId)
         {
             var trader = await _context.Traders.SingleOrDefaultAsync(t => t.TraderId == traderId);
             if (trader == null)
                 return NotFound("Trader does not exist!");
 
             // var cars = _carService.GetAllTraderCars(traderId);
-            var cars = await _context.Cars.ToListAsync();
+            var cars = await _context.Cars.Where(c => c.TraderId == trader.TraderId).ToListAsync();
+            if (cars==null)
+                return NotFound("No Cars For this Trader !");
             return Ok(cars);
-        }*/
+        }
 
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] AddCarDto addCarDto)
