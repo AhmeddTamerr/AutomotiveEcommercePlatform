@@ -8,7 +8,7 @@ namespace AutomotiveEcommercePlatform.Server.Services
         Car Update (Car car);
         Car Delete(Car car);
         Task<Car> GetById(int id); // for Car info page 
-        Task<IEnumerable<Car>> GetAll(int id); // for searching page 
+        Task<IEnumerable<Car>> GetAll(); // for searching page 
         Task<IEnumerable<Car>> GetAllTraderCars(string traderId); // for trader dashboard 
 
     }

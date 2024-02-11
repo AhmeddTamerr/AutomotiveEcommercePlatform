@@ -1,9 +1,9 @@
-﻿namespace AutomotiveEcommercePlatform.Server.DTOs
+﻿namespace AutomotiveEcommercePlatform.Server.DTOs.AuthenticationDTOs
 {
     public class UserRegistrationRequestDto
     {
 
-        
+
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Role { get; set; }

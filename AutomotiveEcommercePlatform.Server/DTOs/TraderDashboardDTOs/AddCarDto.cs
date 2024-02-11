@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace AutomotiveEcommercePlatform.Server.DTOs
+namespace AutomotiveEcommercePlatform.Server.DTOs.TraderDashboardDTOs
 {
     public class AddCarDto
     {
@@ -12,6 +12,8 @@ namespace AutomotiveEcommercePlatform.Server.DTOs
         public decimal Price { get; set; }
         [MaxLength(15)]
         public string CarCategory { get; set; }
-        public string CarImage { get; set; } 
+        public string CarImage { get; set; }
+
+        public string TraderId { get; set; }
     }
 }

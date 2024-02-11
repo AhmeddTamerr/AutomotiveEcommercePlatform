@@ -1,4 +1,4 @@
-﻿namespace AutomotiveEcommercePlatform.Server.DTOs
+﻿namespace AutomotiveEcommercePlatform.Server.DTOs.AuthenticationDTOs
 {
     public class UserLoginRequestDto
     {

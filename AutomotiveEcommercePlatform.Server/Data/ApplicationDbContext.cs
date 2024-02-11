@@ -49,7 +49,6 @@ namespace ReactApp1.Server.Data
             modelBuilder.Entity<Trader>()
                 .HasKey(c => c.TraderId);
 
-
             modelBuilder.Entity<Cart>()
                 .HasOne<User>()
                 .WithOne()

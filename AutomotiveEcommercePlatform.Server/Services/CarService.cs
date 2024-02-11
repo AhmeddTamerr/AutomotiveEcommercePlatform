@@ -1,4 +1,5 @@
 ﻿using DataBase_LastTesting.Models;
+using Microsoft.EntityFrameworkCore;
 using ReactApp1.Server.Data;
 
 namespace AutomotiveEcommercePlatform.Server.Services
@@ -20,17 +21,21 @@ namespace AutomotiveEcommercePlatform.Server.Services
 
         public Car Delete(Car car)
         {
-            throw new NotImplementedException();
+            _context.Remove(car);
+            _context.SaveChanges();
+            return car;
         }
 
-        public Task<IEnumerable<Car>> GetAll(int id)
+        public async Task<IEnumerable<Car>> GetAll()
         {
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<Car>> GetAllTraderCars(string traderId)
+        public async Task<IEnumerable<Car>> GetAllTraderCars(string traderId)
         {
-            throw new NotImplementedException();
+            return await _context.Cars
+                .Where(c => c.TraderId == traderId)
+                .ToListAsync();
         }
 
         public Task<Car> GetById(int id)

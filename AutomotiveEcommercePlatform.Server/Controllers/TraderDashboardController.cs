@@ -1,40 +1,55 @@
 ﻿using AutomotiveEcommercePlatform.Server.Data;
-using AutomotiveEcommercePlatform.Server.DTOs;
+using AutomotiveEcommercePlatform.Server.DTOs.TraderDashboardDTOs;
 using AutomotiveEcommercePlatform.Server.Services;
 using DataBase_LastTesting.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ReactApp1.Server.Data;
+using System.Text.Json;
 
 namespace AutomotiveEcommercePlatform.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CarController : ControllerBase
+    public class TraderDashboardController : ControllerBase
     {
         private readonly ICarService _carService;
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
-        public CarController(ICarService carService , ApplicationDbContext context , UserManager<ApplicationUser> userManager)
+        public TraderDashboardController(ICarService carService , ApplicationDbContext context , UserManager<ApplicationUser> userManager)
         {
             _carService =  carService;
             _context = context;
             _userManager = userManager;
         }
 
-        [HttpPost("traderId")]
-        public async Task<IActionResult> CreateAsync(string traderId ,[FromBody] AddCarDto addCarDto)
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetTraderCars(string traderId )
+        {
+            var trader = await _context.Traders.SingleOrDefaultAsync(t => t.TraderId == traderId);
+            if (trader == null)
+                return NotFound("Trader does not exist!");
+            var cars = _carService.GetAllTraderCars(traderId);
+            string obj = JsonSerializer.Serialize(cars);
+            return Ok(obj);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateAsync([FromBody] AddCarDto addCarDto)
         {
             
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            if (addCarDto == null|| traderId==null)
+            if (addCarDto == null|| addCarDto.TraderId == null)
                 return BadRequest("Invalid Data !");
 
-            var validTrader = await _userManager.FindByIdAsync(traderId);
+            var validTrader = await _userManager.FindByIdAsync(addCarDto.TraderId);
 
             if (validTrader == null)
-                return BadRequest("Trader is not exists!");
+                return NotFound("Trader is not exists!");
 
             if (!await _userManager.IsInRoleAsync(validTrader,"Trader"))
                 return BadRequest("UnAuthorized Party!");
@@ -61,11 +76,26 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
                 Price = addCarDto.Price,
                 CarCategory = addCarDto.CarCategory,
                 CarImage = addCarDto.CarImage,
-                TraderId = traderId
+                TraderId = addCarDto.TraderId,
+                InStock = true
             };
             await _carService.Add(car);
             return Ok(car);
         }
+        
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteAsync([FromBody] int id)
+        {
+            var car = await _context.Cars.SingleOrDefaultAsync(c => c.Id == id);
+
+            if (car == null) 
+                return NotFound("This Car does not Exist!");
+
+            _carService.Delete(car);
+            return Ok(car);
+        }
+        
 
     }
 }

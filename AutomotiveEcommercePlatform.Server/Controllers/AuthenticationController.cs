@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using AutomotiveEcommercePlatform.Server.Configurations;
 using AutomotiveEcommercePlatform.Server.Data;
-using AutomotiveEcommercePlatform.Server.DTOs;
+using AutomotiveEcommercePlatform.Server.DTOs.AuthenticationDTOs;
 using AutomotiveEcommercePlatform.Server.Models;
 using AutomotiveEcommercePlatform.Server.Services;
 using DataBase_LastTesting.Models;
@@ -141,14 +141,20 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
                         return BadRequest(AddRoleResult);
                     }
 
-                    /*var createdUser = _userManager.FindByEmailAsync(requestDto.Email);
-                    if (requestDto.Role.ToUpper() == "USER")
-                    {
-                       // await _context.Users.AddAsync(createdUser.Id);
-                        //_context.SaveChanges();
-                    }*/
+                    var createdUser = await _userManager.FindByEmailAsync(requestDto.Email);
+                        if (requestDto.Role.ToUpper() == "USER")
+                        {
+                            await _context.Users.AddAsync(new User(){ UserId = newUser.Id});
+                            await _context.Carts.AddAsync(new Cart() { CartId = newUser.Id });
+                            _context.SaveChanges();
+                        }
 
-                    return Ok(new AuthResult()
+                        if (requestDto.Role.ToUpper() == "TRADER")
+                        {
+                            await _context.Traders.AddAsync(new Trader() { TraderId = newUser.Id });
+                            _context.SaveChanges();
+                        }
+                        return Ok(new AuthResult()
                     {
                         Result = true,
                         Token = token

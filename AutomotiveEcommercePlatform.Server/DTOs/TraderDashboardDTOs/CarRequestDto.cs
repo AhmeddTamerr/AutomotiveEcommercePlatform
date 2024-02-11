@@ -2,7 +2,7 @@
 using DataBase_LastTesting.Models;
 using System.ComponentModel.DataAnnotations;
 
-namespace AutomotiveEcommercePlatform.Server.DTOs
+namespace AutomotiveEcommercePlatform.Server.DTOs.TraderDashboardDTOs
 {
     public class CarRequestDto
     {
