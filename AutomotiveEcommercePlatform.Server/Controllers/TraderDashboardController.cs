@@ -14,28 +14,27 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
     [ApiController]
     public class TraderDashboardController : ControllerBase
     {
-        private readonly ICarService _carService;
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
-        public TraderDashboardController(ICarService carService , ApplicationDbContext context , UserManager<ApplicationUser> userManager)
+        public TraderDashboardController(ApplicationDbContext context , UserManager<ApplicationUser> userManager)
         {
-            _carService =  carService;
             _context = context;
             _userManager = userManager;
         }
 
 
 
-        [HttpGet]
+/*        [HttpGet]
         public async Task<IActionResult> GetTraderCars(string traderId )
         {
             var trader = await _context.Traders.SingleOrDefaultAsync(t => t.TraderId == traderId);
             if (trader == null)
                 return NotFound("Trader does not exist!");
-            var cars = _carService.GetAllTraderCars(traderId);
-            string obj = JsonSerializer.Serialize(cars);
-            return Ok(obj);
-        }
+
+            // var cars = _carService.GetAllTraderCars(traderId);
+            var cars = await _context.Cars.ToListAsync();
+            return Ok(cars);
+        }*/
 
         [HttpPost]
         public async Task<IActionResult> CreateAsync([FromBody] AddCarDto addCarDto)
@@ -79,7 +78,8 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
                 TraderId = addCarDto.TraderId,
                 InStock = true
             };
-            await _carService.Add(car);
+            await _context.Cars.AddAsync(car);
+            _context.SaveChanges();
             return Ok(car);
         }
         
@@ -92,7 +92,8 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
             if (car == null) 
                 return NotFound("This Car does not Exist!");
 
-            _carService.Delete(car);
+            _context.Remove(car);
+            _context.SaveChanges();
             return Ok(car);
         }
         

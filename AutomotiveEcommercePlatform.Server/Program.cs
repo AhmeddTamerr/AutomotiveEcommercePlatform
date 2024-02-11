@@ -40,8 +40,6 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 // Adding ICarService
-builder.Services.AddScoped<ICarService, CarService>();
-
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
