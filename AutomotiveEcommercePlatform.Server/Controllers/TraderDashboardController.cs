@@ -22,6 +22,34 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
             _userManager = userManager;
         }
 
+        [HttpGet("{traderid}")]
+        public async Task<IActionResult> GetTraderInfoAsync(string traderid)
+        {
+            var trader = await _userManager.FindByIdAsync(traderid);
+
+            var Responce = new TraderInfoDTO()
+            {
+                TraderName = trader.DisplayName,
+                PhoneNumber = trader.PhoneNumber,
+                Email = trader.Email,
+            };
+            return Ok(Responce);
+        }
+
+
+        [HttpPut("{traderId}")]
+        public async Task<IActionResult> EditCarAsync(string traderid , EditCarsDTO dto)
+        {
+            var trader = await _context.Traders.SingleOrDefaultAsync(t => t.TraderId == traderid);
+            var cars = await _context.Cars.Where(c => c.TraderId == trader.TraderId);
+            var car = new Car();
+
+            if (cars == null)
+                return BadRequest("NULl");
+            car.Price=dto.Price;
+            _context.SaveChanges();
+            return Ok(car);
+        }
 
 
         [HttpGet]
@@ -66,7 +94,7 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
                 return BadRequest("Missing a required field !");
             if (addCarDto.Price < 0)
                 return BadRequest("Price can not be negative !");
-            if (DateTime.Now.Year < addCarDto.ModelYear || addCarDto.ModelYear < 1885)
+            if (DateTime.Now.Year  < addCarDto.ModelYear || addCarDto.ModelYear < 1885)
                 return BadRequest("Invalid Model Year!");
 
             var car = new Car()
