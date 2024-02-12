@@ -87,12 +87,18 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
         
 
         [HttpDelete]
-        public async Task<IActionResult> DeleteAsync([FromBody] int id)
+        public async Task<IActionResult> DeleteAsync(string traderId,int carId)
         {
-            var car = await _context.Cars.SingleOrDefaultAsync(c => c.Id == id);
+            var trader = await _context.Traders.SingleOrDefaultAsync(t => t.TraderId == traderId);
+            if (trader == null)
+                return NotFound("Trader does not Exist!");
 
+            var car = await _context.Cars.SingleOrDefaultAsync(c => c.Id == carId);
             if (car == null) 
                 return NotFound("This Car does not Exist!");
+
+            if (car.TraderId == traderId)
+                return Unauthorized("This action is not allowed!");
 
             _context.Remove(car);
             _context.SaveChanges();
