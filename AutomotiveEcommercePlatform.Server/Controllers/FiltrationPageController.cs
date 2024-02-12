@@ -10,12 +10,12 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class SearchController : ControllerBase
+    public class FiltrationPageController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public SearchController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public FiltrationPageController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _userManager = userManager;
@@ -30,7 +30,7 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
             return Ok(cars);
         }
 
-        [HttpGet("Filter")]
+        [HttpGet("Search")]
         public async Task<IActionResult> GetFilteredCars([FromQuery]SearchDto searchDto)
         {
             if (searchDto == null)
@@ -57,7 +57,7 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
                 query = query.Where(q => q.Price <= searchDto.maxPrice);
 
 
-            return Ok (query.ToListAsync());
+            return Ok (query);
 
         }   
     }
