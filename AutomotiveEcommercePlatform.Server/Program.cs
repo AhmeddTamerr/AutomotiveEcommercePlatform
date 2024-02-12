@@ -40,6 +40,10 @@ var connectionString = builder.Configuration.GetConnectionString("ApplicationDbC
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 
 
+// Enable Cors 
+
+builder.Services.AddCors();
+
 // Adding IAuthService
 
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -85,6 +89,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// enable cors 
+
+app.UseCors(c => c.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
+
 
 app.UseAuthentication();
 app.UseAuthorization();

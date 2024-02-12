@@ -100,6 +100,30 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
             if (car.TraderId == traderId)
                 return Unauthorized("This action is not allowed!");
 
+            // Trader Can not remove the data of sold car 
+            if (car.OrderId != null)
+                return BadRequest("Removing Data of Sold Car is not allowed!");
+
+            // Remove car Comments and Reviews before removing the car 
+            var carReviews = await _context.CarReviews.Where(cr => cr.CarId == carId).ToListAsync();
+            if (carReviews != null)
+            {
+                foreach (var review in carReviews)
+                    _context.Remove(review);
+                _context.SaveChanges();
+            }
+            // Remove the car from all carts 
+            var carItems = await _context.CarReviews.Where(c => c.CarId == carId).ToListAsync();
+            if (carItems != null)
+            {
+                foreach (var item in carItems)
+                    _context.Remove(item);
+                _context.SaveChanges();
+            }
+
+
+
+
             _context.Remove(car);
             _context.SaveChanges();
             return Ok(car);
