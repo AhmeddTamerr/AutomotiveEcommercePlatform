@@ -26,6 +26,6 @@ namespace AutomotiveEcommercePlatform.Server.DTOs.CarInfoPageDTOs
 
         public string PhoneNumber { get; set; }
 
-        public List<CarReviewDto> carReview { get; set; }
+        public List<CarReview> carReviews { get; set; }
     }
 }

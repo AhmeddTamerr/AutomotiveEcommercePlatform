@@ -36,30 +36,13 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
             if (trader == null)
                 return BadRequest("SomeThing Went Wrong !");
             // Car info + Car Review + Trader display + Trader Rating 
-            var carReviews = await _context.CarReviews.Where(c => c.CarId == carId).ToListAsync();
 
-            // var traderRating = await _context?.TraderRatings?.Where(c => c.TraderId == trader.Id)?.Select(t => t.Rating)?.AverageAsync();
-            var traderRatings = _context.TraderRatings.Where(c => c.TraderId == trader.Id );
-            double avgTraderRating = 0 , n = 0;
-            if (traderRatings.Any())
-                foreach (var rate in traderRatings)
-                {
-                    avgTraderRating += rate.Rating; n++;
-                }
-            avgTraderRating /= n;
-
-            var reviewList = new List<CarReviewDto>();
-            if (carReviews.Any())
-                foreach (var review in carReviews)
-                {
-                    var carReview = new CarReviewDto()
-                    {
-                        Rating = review.Rating,
-                        Comment = review.Comment
-                    };
-                    reviewList.Add(carReview);
-                }
-
+            var averageTraderRating = _context.TraderRatings
+                .Where(tr => tr.TraderId == car.TraderId)
+                .Select(tr => tr.Rating)
+                .ToList()
+                .DefaultIfEmpty(0)
+                .Average();
             var responce = new CarInfoResponseDto()
             {
                 Id = carId,
@@ -70,8 +53,8 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
                 CarCategory = car.CarCategory,
                 CarImage = car.CarImage,
                 InStock = car.InStock,
-                carReview = reviewList,
-                TraderRating = avgTraderRating,
+                carReviews = car.CarReviews,
+                TraderRating = averageTraderRating,
                 FirstName = trader.FirstName,
                 LastName = trader.LastName,
                 PhoneNumber = trader.PhoneNumber
