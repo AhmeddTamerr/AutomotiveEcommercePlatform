@@ -172,7 +172,7 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
 
         [Route("Login")]
         [HttpPost]
-        public async Task<IActionResult> Login([FromBody] UserLoginRequestDto loginRequest)
+        public async Task<IActionResult> Login(UserLoginRequestDto loginRequest)
         {
             if (ModelState.IsValid)
             {
