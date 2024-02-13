@@ -26,7 +26,7 @@ namespace DataBase_LastTesting.Models
         [JsonIgnore]
         public Order Order { get; set; }
         [JsonIgnore]
-        public List<CarReview> CarReview { get; set;}
+        public List<CarReview> CarReviews { get; set;}
         [JsonIgnore]
         public ICollection<Cart> Cart { get; set; }
         [JsonIgnore]
