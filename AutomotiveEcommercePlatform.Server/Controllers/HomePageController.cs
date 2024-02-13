@@ -20,20 +20,22 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
             _userManager = userManager;
         }
 
-    //    [HttpGet]
+        [HttpGet]
 
-    //    public async Task<IActionResult> GetTheMostExpensiveCarsAsync()
-    //    {
-    //        var car = new List<Car>().Where(c=> new 
-    //        {
-                 
-    //        })
-                
+        public async Task<IActionResult> GetTheMostExpensiveCarsAsync()
+        {
+            int min = 0;
+            var cars = _context.Cars.OrderByDescending(c => c.Price);
+            int count = cars.Count();
+            if (count < 6)
+                min = count;
 
-    //         car = await _context.Cars
-    //            .Where(c => c.InStock == true)
-    //            .ToListAsync();
-    //        return Ok(car);
-    //    }
-    //}
+            var Responce = _context.Cars
+                .OrderByDescending(p => p.Price)
+                .Take(min)
+                .ToList();
+
+            return Ok(Responce);
+        }
+    }
 }

@@ -37,16 +37,21 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
         }
 
 
-        [HttpPut("{traderId}")]
-        public async Task<IActionResult> EditCarAsync(string traderid , EditCarsDTO dto)
+        [HttpPut("{carid}")]
+        public async Task<IActionResult> EditCarAsync(int carid , EditCarsDTO dto)
         {
-            var trader = await _context.Traders.SingleOrDefaultAsync(t => t.TraderId == traderid);
-            var cars = await _context.Cars.Where(c => c.TraderId == trader.TraderId);
-            var car = new Car();
+            var car = _context.Cars.SingleOrDefault(g=>g.Id == carid);
+            //if (car == null)
+            //    return BadRequest("No Car was found with that Id"); sknce its gonna be onclick so its not needed
+            //if (dto.Price == car.Price)
+            //    return BadRequest("No changes were made");
+            if (dto.CarCategory !=string.Empty){ car.CarCategory = dto.CarCategory; }
+            if (dto.Price!=-1) {car.Price = dto.Price;}
+            if (dto.BrandName != string.Empty){ car.BrandName = dto.BrandName;}
+            if (dto.ModelName != string.Empty){ car.ModelName = dto.ModelName; }
+            if (dto.ModelYear != 1) { car.ModelYear = dto.ModelYear; }
+            if (dto.CarImage != string.Empty) {car.CarImage=dto.CarImage;}
 
-            if (cars == null)
-                return BadRequest("NULl");
-            car.Price=dto.Price;
             _context.SaveChanges();
             return Ok(car);
         }
@@ -60,7 +65,8 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
                 return NotFound("Trader does not exist!");
 
             // var cars = _carService.GetAllTraderCars(traderId);
-            var cars = await _context.Cars.Where(c => c.TraderId == trader.TraderId).ToListAsync();
+            var cars = await _context.Cars.Where(c => c.TraderId == trader.TraderId ).Where(c=>c.InStock==true)
+                .ToListAsync();
             if (cars==null)
                 return NotFound("No Cars For this Trader !");
             return Ok(cars);
@@ -122,7 +128,8 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
             if (car == null) 
                 return NotFound("This Car does not Exist!");
 
-            _context.Remove(car);
+            car.InStock = false;
+
             _context.SaveChanges();
             return Ok(car);
         }
