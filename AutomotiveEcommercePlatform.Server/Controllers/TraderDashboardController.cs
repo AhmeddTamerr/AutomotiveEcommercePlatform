@@ -22,6 +22,39 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
             _userManager = userManager;
         }
 
+        [HttpGet("{traderid}")]
+        public async Task<IActionResult> GetTraderInfoAsync(string traderid)
+        {
+            var trader = await _userManager.FindByIdAsync(traderid);
+
+            var Responce = new TraderInfoDTO()
+            {
+                TraderName = trader.DisplayName,
+                PhoneNumber = trader.PhoneNumber,
+                Email = trader.Email,
+            };
+            return Ok(Responce);
+        }
+
+
+        [HttpPut("{carid}")]
+        public async Task<IActionResult> EditCarAsync(int carid , EditCarsDTO dto)
+        {
+            var car = _context.Cars.SingleOrDefault(g=>g.Id == carid);
+            //if (car == null)
+            //    return BadRequest("No Car was found with that Id"); sknce its gonna be onclick so its not needed
+            //if (dto.Price == car.Price)
+            //    return BadRequest("No changes were made");
+            if (dto.CarCategory !=string.Empty){ car.CarCategory = dto.CarCategory; }
+            if (dto.Price!=-1) {car.Price = dto.Price;}
+            if (dto.BrandName != string.Empty){ car.BrandName = dto.BrandName;}
+            if (dto.ModelName != string.Empty){ car.ModelName = dto.ModelName; }
+            if (dto.ModelYear != 1) { car.ModelYear = dto.ModelYear; }
+            if (dto.CarImage != string.Empty) {car.CarImage=dto.CarImage;}
+
+            _context.SaveChanges();
+            return Ok(car);
+        }
 
 
         [HttpGet]
@@ -32,7 +65,8 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
                 return NotFound("Trader does not exist!");
 
             // var cars = _carService.GetAllTraderCars(traderId);
-            var cars = await _context.Cars.Where(c => c.TraderId == trader.TraderId).ToListAsync();
+            var cars = await _context.Cars.Where(c => c.TraderId == trader.TraderId ).Where(c=>c.InStock==true)
+                .ToListAsync();
             if (cars==null)
                 return NotFound("No Cars For this Trader !");
             return Ok(cars);
@@ -66,7 +100,7 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
                 return BadRequest("Missing a required field !");
             if (addCarDto.Price < 0)
                 return BadRequest("Price can not be negative !");
-            if (DateTime.Now.Year < addCarDto.ModelYear || addCarDto.ModelYear < 1885)
+            if (DateTime.Now.Year  < addCarDto.ModelYear || addCarDto.ModelYear < 1885)
                 return BadRequest("Invalid Model Year!");
 
             var car = new Car()
@@ -97,34 +131,14 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
             if (car == null) 
                 return NotFound("This Car does not Exist!");
 
+           
+
             if (car.TraderId == traderId)
                 return Unauthorized("This action is not allowed!");
 
-            // Trader Can not remove the data of sold car 
-            if (car.OrderId != null)
-                return BadRequest("Removing Data of Sold Car is not allowed!");
+            
 
-            // Remove car Comments and Reviews before removing the car 
-            var carReviews = await _context.CarReviews.Where(cr => cr.CarId == carId).ToListAsync();
-            if (carReviews != null)
-            {
-                foreach (var review in carReviews)
-                    _context.Remove(review);
-                _context.SaveChanges();
-            }
-            // Remove the car from all carts 
-            var carItems = await _context.CarReviews.Where(c => c.CarId == carId).ToListAsync();
-            if (carItems != null)
-            {
-                foreach (var item in carItems)
-                    _context.Remove(item);
-                _context.SaveChanges();
-            }
-
-
-
-
-            _context.Remove(car);
+            car.InStock = false;
             _context.SaveChanges();
             return Ok(car);
         }
