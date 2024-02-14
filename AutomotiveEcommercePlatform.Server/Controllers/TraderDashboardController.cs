@@ -29,10 +29,10 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
 
 
 
-        [HttpPut("{carid}")]
-        public async Task<IActionResult> EditCarAsync(int carid , EditCarsDTO dto)
+        [HttpPut]
+        public async Task<IActionResult> EditCarAsync([FromQuery] int carId , EditCarsDTO dto)
         {
-            var car = _context.Cars.SingleOrDefault(g=>g.Id == carid);
+            var car = _context.Cars.SingleOrDefault(g=>g.Id == carId);
             //if (car == null)
             //    return BadRequest("No Car was found with that Id"); sknce its gonna be onclick so its not needed
             //if (dto.Price == car.Price)
@@ -50,7 +50,7 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetTraderCars(string traderId)
+        public async Task<IActionResult> GetTraderCars([FromQuery]string traderId)
         {
             var trader = await _context.Traders.SingleOrDefaultAsync(t => t.TraderId == traderId);
             if (trader == null)
@@ -65,15 +65,15 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAsync([FromBody] AddCarDto addCarDto)
+        public async Task<IActionResult> CreateAsync([FromQuery]string traderId, [FromBody] AddCarDto addCarDto)
         {
             
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            if (addCarDto == null|| addCarDto.TraderId == null)
+            if (addCarDto == null|| traderId == null)
                 return BadRequest("Invalid Data !");
 
-            var validTrader = await _userManager.FindByIdAsync(addCarDto.TraderId);
+            var validTrader = await _userManager.FindByIdAsync(traderId);
 
             if (validTrader == null)
                 return NotFound("Trader is not exists!");
@@ -103,7 +103,7 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
                 Price = addCarDto.Price,
                 CarCategory = addCarDto.CarCategory,
                 CarImage = addCarDto.CarImage,
-                TraderId = addCarDto.TraderId,
+                TraderId = traderId,
                 InStock = true
             };
             await _context.Cars.AddAsync(car);
@@ -113,7 +113,7 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
         
 
         [HttpDelete]
-        public async Task<IActionResult> DeleteAsync(string traderId,int carId)
+        public async Task<IActionResult> DeleteAsync([FromQuery] string traderId,[FromQuery]int carId)
         {
             var trader = await _context.Traders.SingleOrDefaultAsync(t => t.TraderId == traderId);
             if (trader == null)

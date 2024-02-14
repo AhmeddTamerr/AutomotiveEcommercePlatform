@@ -21,8 +21,8 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
             _userManager = userManager;
         }
 
-        [HttpPost("AddTraderReview")]
-        public async Task<IActionResult> AddTraderReviewAsync(TraderReviewDTO dto)
+        [HttpPost]
+        public async Task<IActionResult> AddTraderReviewAsync([FromQuery]string traderId,[FromBody]TraderReviewDTO dto)
         {
 
             if (dto.Rating > 5)
@@ -32,7 +32,7 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
             {
                 Rating = dto.Rating,
                 UserId = dto.UserId,
-                TraderId = dto.TraderId
+                TraderId = traderId
             };
             await _context.AddAsync(tradingtating);
             _context.SaveChanges();
@@ -40,9 +40,9 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
             return Ok(tradingtating);
         }
 
-        [HttpPost("AddCarReview")]
+        [HttpPost("CarReview")]
 
-        public async Task<IActionResult> AddCarReviewAsync(CarReviewDTO dto)
+        public async Task<IActionResult> AddCarReviewAsync([FromQuery]int carId ,[FromBody]CarReviewDTO dto)
         {
             if (dto.Rating > 5)
                 return BadRequest("The Rating cant exceed 5");
@@ -52,7 +52,7 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
                 Rating = dto.Rating,
                 Comment = dto.Comment,
                 UserId = dto.UserId,
-                CarId = dto.CarId
+                CarId = carId
             };
 
             

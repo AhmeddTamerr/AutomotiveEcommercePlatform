@@ -11,59 +11,59 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class FiltrationPageController : ControllerBase
+    public class SearchController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public FiltrationPageController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public SearchController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _userManager = userManager;
         }
 
+        //[HttpGet]
+        //public async Task<IActionResult> GetAllAsync()
+        //{
+        //    var cars = _context.Cars.Where(c=>c.InStock == true);
+
+        //    var carsInfo = new List<CarInfoResponseDto>();
+
+        //    foreach (var car in cars)
+        //    {
+        //        var Trader = await _userManager.FindByIdAsync(car.TraderId);
+        //        if (Trader == null) continue;
+
+        //        var averageTraderRating = _context.TraderRatings
+        //            .Where(tr => tr.TraderId == car.TraderId) 
+        //            .Select(tr => tr.Rating)
+        //            .ToList()
+        //            .DefaultIfEmpty(0) 
+        //            .Average();
+
+        //        var responce = new CarInfoResponseDto()
+        //        {
+        //            Id = car.Id,
+        //            ModelName = car.ModelName,
+        //            BrandName = car.BrandName,
+        //            CarCategory = car.CarCategory,
+        //            CarImage =car.CarImage,
+        //            ModelYear = car.ModelYear,
+        //            Price = car.Price,
+        //            carReviews = car.CarReviews,
+        //            FirstName = Trader.FirstName,
+        //            LastName = Trader.LastName,
+        //            PhoneNumber = Trader.PhoneNumber,
+        //            InStock = car.InStock,
+        //            TraderRating = averageTraderRating
+        //        };
+        //        carsInfo.Add(responce);
+        //    }
+
+        //    return Ok(carsInfo);
+        //}
+
         [HttpGet]
-        public async Task<IActionResult> GetAllAsync()
-        {
-            var cars = _context.Cars.Where(c=>c.InStock == true);
-
-            var carsInfo = new List<CarInfoResponseDto>();
-
-            foreach (var car in cars)
-            {
-                var Trader = await _userManager.FindByIdAsync(car.TraderId);
-                if (Trader == null) continue;
-
-                var averageTraderRating = _context.TraderRatings
-                    .Where(tr => tr.TraderId == car.TraderId) 
-                    .Select(tr => tr.Rating)
-                    .ToList()
-                    .DefaultIfEmpty(0) 
-                    .Average();
-
-                var responce = new CarInfoResponseDto()
-                {
-                    Id = car.Id,
-                    ModelName = car.ModelName,
-                    BrandName = car.BrandName,
-                    CarCategory = car.CarCategory,
-                    CarImage =car.CarImage,
-                    ModelYear = car.ModelYear,
-                    Price = car.Price,
-                    carReviews = car.CarReviews,
-                    FirstName = Trader.FirstName,
-                    LastName = Trader.LastName,
-                    PhoneNumber = Trader.PhoneNumber,
-                    InStock = car.InStock,
-                    TraderRating = averageTraderRating
-                };
-                carsInfo.Add(responce);
-            }
-
-            return Ok(carsInfo);
-        }
-
-        [HttpGet("Search")]
         public async Task<IActionResult> GetFilteredCars([FromQuery]SearchDto searchDto)
         {
             if (searchDto == null)

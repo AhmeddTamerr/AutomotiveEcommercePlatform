@@ -13,7 +13,5 @@ namespace AutomotiveEcommercePlatform.Server.DTOs.TraderDashboardDTOs
         [MaxLength(15)]
         public string CarCategory { get; set; }
         public string CarImage { get; set; }
-
-        public string TraderId { get; set; }
     }
 }

@@ -16,11 +16,11 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ProductsController : ControllerBase
+    public class CarInfoPageController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
-        public ProductsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public CarInfoPageController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _userManager = userManager;
