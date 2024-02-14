@@ -29,6 +29,8 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
             var cart = await _context.CartItems.SingleOrDefaultAsync(c => c.CartId == order.UserId);
             var car = await _context.Cars.SingleOrDefaultAsync(c=>c.Id == cart.CarId);
             var trader = await _userManager.FindByIdAsync(car.TraderId);
+
+
             var Responce = new OrdersDTO()
             {
                 OrderId = OrderId,

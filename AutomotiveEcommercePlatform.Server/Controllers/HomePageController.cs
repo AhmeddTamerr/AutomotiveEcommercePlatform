@@ -27,7 +27,7 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
             int min = 0;
             var cars = _context.Cars.OrderByDescending(c => c.Price);
             int count = cars.Count();
-            if (count < 6)
+            if (count <= 10)
                 min = count;
 
             var Responce = _context.Cars

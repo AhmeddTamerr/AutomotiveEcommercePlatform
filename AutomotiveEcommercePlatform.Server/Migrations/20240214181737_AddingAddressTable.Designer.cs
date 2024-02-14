@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ReactApp1.Server.Data;
 
@@ -11,9 +12,11 @@ using ReactApp1.Server.Data;
 namespace AutomotiveEcommercePlatform.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240214181737_AddingAddressTable")]
+    partial class AddingAddressTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -145,7 +148,7 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Addresses", (string)null);
+                    b.ToTable("Addresses");
                 });
 
             modelBuilder.Entity("AutomotiveEcommercePlatform.Server.Models.CartItem", b =>
@@ -160,7 +163,7 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
 
                     b.HasIndex("CarId");
 
-                    b.ToTable("CartItems", (string)null);
+                    b.ToTable("CartItems");
                 });
 
             modelBuilder.Entity("DataBase_LastTesting.Models.Car", b =>
@@ -214,7 +217,7 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
 
                     b.HasIndex("TraderId");
 
-                    b.ToTable("Cars", (string)null);
+                    b.ToTable("Cars");
                 });
 
             modelBuilder.Entity("DataBase_LastTesting.Models.CarReview", b =>
@@ -244,7 +247,7 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("CarReviews", (string)null);
+                    b.ToTable("CarReviews");
                 });
 
             modelBuilder.Entity("DataBase_LastTesting.Models.Cart", b =>
@@ -254,7 +257,7 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
 
                     b.HasKey("CartId");
 
-                    b.ToTable("Carts", (string)null);
+                    b.ToTable("Carts");
                 });
 
             modelBuilder.Entity("DataBase_LastTesting.Models.Order", b =>
@@ -281,7 +284,7 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("DataBase_LastTesting.Models.Trader", b =>
@@ -291,7 +294,7 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
 
                     b.HasKey("TraderId");
 
-                    b.ToTable("Traders", (string)null);
+                    b.ToTable("Traders");
                 });
 
             modelBuilder.Entity("DataBase_LastTesting.Models.TraderRating", b =>
@@ -319,7 +322,7 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("TraderRatings", (string)null);
+                    b.ToTable("TraderRatings");
                 });
 
             modelBuilder.Entity("DataBase_LastTesting.Models.User", b =>
@@ -329,7 +332,7 @@ namespace AutomotiveEcommercePlatform.Server.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
