@@ -1,4 +1,5 @@
 ﻿using AutomotiveEcommercePlatform.Server.Data;
+using AutomotiveEcommercePlatform.Server.DTOs.SearchDTOs;
 using AutomotiveEcommercePlatform.Server.DTOs.TraderDashboardDTOs;
 using AutomotiveEcommercePlatform.Server.Services;
 using DataBase_LastTesting.Models;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ReactApp1.Server.Data;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace AutomotiveEcommercePlatform.Server.Controllers
 {
@@ -22,19 +24,9 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
             _userManager = userManager;
         }
 
-        [HttpGet("{traderid}")]
-        public async Task<IActionResult> GetTraderInfoAsync(string traderid)
-        {
-            var trader = await _userManager.FindByIdAsync(traderid);
 
-            var Responce = new TraderInfoDTO()
-            {
-                TraderName = trader.DisplayName,
-                PhoneNumber = trader.PhoneNumber,
-                Email = trader.Email,
-            };
-            return Ok(Responce);
-        }
+
+
 
 
         [HttpPut("{carid}")]

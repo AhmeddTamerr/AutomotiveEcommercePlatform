@@ -21,25 +21,55 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
             _userManager = userManager;
         }
 
-        [HttpGet ("{OrderId}")]
-        public async Task<IActionResult> GetOrderDetailsAsync(int OrderId)
+        [HttpGet ]
+        public async Task<IActionResult> GetOrderDetailsAsync([FromQuery] int orderId)
         {
-            var order = await _context.Orders.SingleOrDefaultAsync(c => c.Id == OrderId);
-            var user = await _userManager.FindByIdAsync(order.UserId);
-            var cart = await _context.CartItems.SingleOrDefaultAsync(c => c.CartId == order.UserId);
-            var car = await _context.Cars.SingleOrDefaultAsync(c=>c.Id == cart.CarId);
-            var trader = await _userManager.FindByIdAsync(car.TraderId);
-            var Responce = new OrdersDTO()
+            var order = await _context.Orders.SingleOrDefaultAsync(c => c.Id == orderId);
+            if (order == null)
+                return NotFound("The Order does not exist!");
+
+            var orderCars = await _context.Cars.Where(c => c.OrderId == orderId).ToListAsync();
+
+            var customer = await _userManager.FindByIdAsync(order.UserId);
+
+            var carFullInfo = new List<OrderCarInfoDto>();
+            /*
+                public int OrderId { get; set; }
+               public List<OrderCarInfoDto> CarsInfo { get; set; }
+               public decimal TotalPrice { get; set; }
+               public string PaymentStatus { get; set; }
+               public DateTime PurchaseDate { get; set; }
+             */
+            foreach (var car in orderCars)
             {
-                OrderId = OrderId,
-                CustomerName = user.DisplayName,
-                CarDetails = car.BrandName + car.ModelName + car.ModelYear,
-                TraderName = trader.DisplayName,
-                Price = order.Price,
+                var trader = await _userManager.FindByIdAsync(car.TraderId);
+                var orderCarInfo = new OrderCarInfoDto()
+                {
+                    CarId = car.Id , 
+                    BrandName = car.BrandName,
+                    ModelName = car.ModelName,
+                    ModelYear = car.ModelYear,
+                    Price = car.Price,
+                    CarCategory = car.CarCategory,
+                    TraderName = trader!=null ? trader.DisplayName : String.Empty
+                };
+                carFullInfo.Add(orderCarInfo);
+            }
+            var total = orderCars
+                .Select(c => c.Price)
+                .ToList()
+                .DefaultIfEmpty(0)
+                .Sum();
+            var orderDetails = new OrdersDTO()
+            {
+                OrderId = orderId,
+                CarsInfo = carFullInfo,
+                TotalPrice = total,
                 PaymentStatus = "Completed",
-                PurchaseDate = order.PurchaseDate,
+                CustomerName = customer.DisplayName,
+                PurchaseDate = DateTime.Now
             };
-            return Ok(Responce);
+            return Ok(orderDetails);
         }
     }
 }
