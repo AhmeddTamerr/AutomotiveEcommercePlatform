@@ -72,13 +72,13 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
             IQueryable<Car> query = _context.Cars.Where(c=>c.InStock==true);
 
             if (!string.IsNullOrEmpty(searchDto.BrandName))
-                query = query.Where(q => q.BrandName.ToUpper() == searchDto.BrandName.ToUpper());
+                query = query.Where(q => q.BrandName.ToUpper().Contains(searchDto.BrandName.ToUpper()));
 
             if (!string.IsNullOrEmpty(searchDto.CarCategory))
-                query = query.Where(q => q.CarCategory.ToUpper() == searchDto.CarCategory.ToUpper());
+                query = query.Where(q => q.CarCategory.ToUpper().Contains(searchDto.CarCategory.ToUpper()));
 
             if (!string.IsNullOrEmpty(searchDto.ModelName))
-                query = query.Where(q => q.ModelName.ToUpper() == searchDto.ModelName.ToUpper());
+                query = query.Where(q => q.ModelName.ToUpper().Contains( searchDto.ModelName.ToUpper()));
 
             if (searchDto.ModelYear!=null)
                 query = query.Where(q => q.ModelYear == searchDto.ModelYear);
