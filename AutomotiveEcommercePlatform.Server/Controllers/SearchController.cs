@@ -64,7 +64,7 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
         //}
 
         [HttpGet]
-        public async Task<IActionResult> GetFilteredCars([FromQuery]SearchDto searchDto)
+        public async Task<IActionResult> GetFilteredCars([FromQuery]SearchDto searchDto , [FromQuery] int page=1)
         {
             if (searchDto == null)
                 return NotFound("Not Found the Page !");
@@ -90,7 +90,18 @@ namespace AutomotiveEcommercePlatform.Server.Controllers
                 query = query.Where(q => q.Price <= searchDto.maxPrice);
 
 
-            return Ok (query);
+            var pageSize = 3;
+
+            var totalCount = query.Count();
+
+            if (!(0 <= page && page <= totalCount))
+                return NotFound("Page Not Found!");
+
+            var totalPages =totalCount / pageSize;
+
+            var cars = query.Skip((page-1)*pageSize).Take(pageSize).ToList();
+
+            return Ok(cars);
 
         }   
     }
