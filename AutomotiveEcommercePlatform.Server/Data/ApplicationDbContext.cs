@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Emit;
+using System.Xml;
 using AutomotiveEcommercePlatform.Server.Models;
 
 namespace ReactApp1.Server.Data
@@ -139,6 +140,51 @@ namespace ReactApp1.Server.Data
                         j.HasKey(t => t.Id);
                     }
                 );
+            modelBuilder.Entity<Address>()
+                .Property(p => p.DisplayAddress)
+                .HasComputedColumnSql("[Country] + ' ' + [City] + ' ' + [State] + ' ' + [StreetAddress]");
+
+            modelBuilder.Entity<Address>()
+                .HasOne(p => p.User)
+                .WithMany(u => u.Addreses)
+                .HasForeignKey(p => p.UserId)
+                .HasPrincipalKey(p => p.UserId);
+
+
+            //testing 
+            //modelBuilder.Entity<Address>()
+            //    .Property(c => c.Country)
+            //    .IsRequired(false);
+
+            //modelBuilder.Entity<Address>()
+            //    .Property(c => c.City)
+            //    .IsRequired(false);
+
+            //modelBuilder.Entity<Address>()
+            //    .Property(c => c.State)
+            //    .IsRequired(false);
+
+            //modelBuilder.Entity<Address>()
+            //    .Property(c => c.ZipCode)
+            //    .IsRequired(false); ;
+
+            //modelBuilder.Entity<Address>()
+            //    .Property(c => c.SreetAddress)
+            //    .IsRequired(false);
+
+            //modelBuilder.Entity<Address>()
+            //    .Property(c => c.DisplayAddress)
+            //    .IsRequired(false);
+
+
+            //.IsRequired(false);
+
+            //modelBuilder.Entity<User>()
+            //    .HasMany(p => p.Addreses)
+            //    .WithOne()
+            //    .HasForeignKey(p => p.AddressId)
+            //    .HasPrincipalKey(a => a.AddressId);
+
         }
         public DbSet<Car> Cars { get; set; }
         public DbSet<CarReview> CarReviews { get; set; }
@@ -148,6 +194,7 @@ namespace ReactApp1.Server.Data
         public DbSet<Trader> Traders { get; set; }
         public DbSet<TraderRating> TraderRatings { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Address> Addresses { get; set; }
         
         
     }
